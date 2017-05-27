@@ -4,36 +4,35 @@ require __DIR__ . '/vendor/autoload.php';
 use System\Messenger;
 header('Content-type:application/json');
 
-$input = json_decode('{
+/*$input = json_decode('{
     "object": "page",
     "entry": [
         {
             "id": "926837650793495",
-            "time": 1495875971845,
+            "time": 1495876680358,
             "messaging": [
                 {
                     "sender": {
-                        "id": "926837650793495"
-                    },
-                    "recipient": {
                         "id": "1255485451166918"
                     },
-                    "timestamp": 1495875967761,
+                    "recipient": {
+                        "id": "926837650793495"
+                    },
+                    "timestamp": 1495876680244,
                     "message": {
-                        "is_echo": true,
-                        "app_id": 1061043070663726,
-                        "mid": "mid.$cAAMQBwdWfhZiem0jEVcSSfar1_Vj",
-                        "seq": 3118316,
-                        "text": "Hhhhh"
+                        "mid": "mid.$cAAMQBwdWfhZiengCNFcSTK1P8txA",
+                        "seq": 3118457,
+                        "text": "Vafnfamfa"
                     }
                 }
             ]
         }
     ]
-}',1);
+}',1);*/
+file_put_contents('test.txt', json_encode(json_decode(file_get_contents('php://input')),128));
+$input = json_decode(file_get_contents("php://input"),1);
 if ($input) {
     foreach ($input['entry'] as $val) {
-
         if (isset($config[$val['id']])) {
             /**
             *   Init Class
@@ -41,11 +40,12 @@ if ($input) {
             $bot = new Messenger($config[$val['id']]['validation'], $config[$val['id']]['token']);
 
             /**
-            *   Lha kene kie nek enek method get
+            *   Lha kene kie foreach message e
             */
             if (isset($val['messaging'])) {
                 foreach ($val['messaging'] as $message) {
-                    $recipientId = $message['recipient']['id'];
+                    $recipientId = isset($message['sender']['id']) ? $message['sender']['id'] : false;
+                    print $recipientId;
                     if ($message['message']['text']) {
                        print $bot->sendTextMessage($recipientId, $message['message']['text']);
                     } elseif ($message->attachments) {
