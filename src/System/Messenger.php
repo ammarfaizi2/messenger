@@ -96,7 +96,7 @@ class Messenger
         $url = sprintf($url, $pageId, $this->getPageAccessToken());
         $request = new \stdClass();
         $request->setting_type = "greeting";
-        $greeting = new stdClass();
+        $greeting = new \stdClass();
         $greeting->text = $text;
         $request->greeting = $greeting;
         $response = self::executePost($url, $request, true);
