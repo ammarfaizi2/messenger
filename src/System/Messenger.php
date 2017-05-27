@@ -7,7 +7,6 @@ namespace System;
 
 class Messenger
 {
-
     const BASE_URL = 'https://graph.facebook.com/v2.6/';
 
     private $_validationToken;
@@ -20,7 +19,7 @@ class Messenger
     */
     public function __construct($validationToken, $pageAccessToken)
     {
-    	$this->setupWebhook();
+        $this->setupWebhook();
         $this->_validationToken = $validationToken;
         $this->_pageAccessToken = $pageAccessToken;
     }
@@ -55,8 +54,8 @@ class Messenger
     private function setupWebhook()
     {
         if (isset($_REQUEST['hub_challenge']) && isset($_REQUEST['hub_verify_token']) && $this->getValidationToken() == $_REQUEST['hub_verify_token']) {
-        	header("Content-Type:application/json");
-        	http_response_code(200);
+            header("Content-Type:application/json");
+            http_response_code(200);
             echo $_REQUEST['hub_challenge'];
             exit;
         }
@@ -78,7 +77,7 @@ class Messenger
         $parameters = ['recipient' => $recipient, 'message' => $message];
         $response = self::executePost($url, $parameters, true);
         if ($response) {
-        	return $response;
+            return $response;
             /*$responseObject = json_decode($response);
             return is_object($responseObject) && isset($responseObject->recipient_id) && isset($responseObject->message_id);*/
         }
@@ -114,13 +113,19 @@ class Messenger
     public function run()
     {
         $request = self::getJsonRequest();
-        if (!$request) return;
+        if (!$request) {
+            return;
+        }
         $entries = isset($request->entry) ? $request->entry : null;
-        if (!$entries) return;
+        if (!$entries) {
+            return;
+        }
         $messages = [];
         foreach ($entries as $entry) {
             $messagingList = isset($entry->messaging) ? $entry->messaging : null;
-            if (!$messagingList) continue;
+            if (!$messagingList) {
+                continue;
+            }
             foreach ($messagingList as $messaging) {
                 $message = new \stdClass();
                 $message->entryId = isset($entry->id) ? $entry->id : null;
