@@ -50,7 +50,7 @@ class Messenger
     }
 
     /**
-    *
+    * @todo Setup Webhook
     */
     private function setupWebhook()
     {
@@ -62,6 +62,11 @@ class Messenger
         }
     }
 
+    /**
+    * @param	string	$recipientId
+    * @param	string	$text
+    * @return	mixed
+    */
     public function sendTextMessage($recipientId, $text)
     {
         $url = self::BASE_URL . "me/messages?access_token=%s";
@@ -73,12 +78,18 @@ class Messenger
         $parameters = ['recipient' => $recipient, 'message' => $message];
         $response = self::executePost($url, $parameters, true);
         if ($response) {
-            $responseObject = json_decode($response);
-            return is_object($responseObject) && isset($responseObject->recipient_id) && isset($responseObject->message_id);
+        	return $response;
+            /*$responseObject = json_decode($response);
+            return is_object($responseObject) && isset($responseObject->recipient_id) && isset($responseObject->message_id);*/
         }
         return false;
     }
 
+    /**
+    * @param	string	$pageId
+    * @param	string	$text
+    * @return	mixed
+    */
     public function setWelcomeMessage($pageId, $text)
     {
         $url = self::BASE_URL . "%s/thread_settings?access_token=%s";
@@ -96,6 +107,9 @@ class Messenger
         return false;
     }
 
+    /**
+    * @todo App run
+    */
     public function run()
     {
         $request = self::getJsonRequest();
@@ -122,6 +136,9 @@ class Messenger
         $this->_receivedMessages = $messages;
     }
 
+    /**
+    * @return mixed
+    */
     public function subscribeAppToThePage()
     {
         $url = self::BASE_URL . "me/subscribed_apps";
@@ -134,12 +151,21 @@ class Messenger
         return false;
     }
 
+    /**
+    * @return object
+    */
     private static function getJsonRequest()
     {
         $content = file_get_contents("php://input");
         return json_decode($content, false, 512, JSON_BIGINT_AS_STRING);
     }
 
+    /**
+    * @param	string	$url
+    * @param	string	$parameters
+    * @param	bool	$json
+    * @return	string
+    */
     private static function executePost($url, $parameters, $json = false)
     {
         $ch = curl_init();
