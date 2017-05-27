@@ -19,9 +19,9 @@ class Messenger
     */
     public function __construct($validationToken, $pageAccessToken)
     {
-        $this->setupWebhook();
         $this->_validationToken = $validationToken;
         $this->_pageAccessToken = $pageAccessToken;
+        $this->setupWebhook();
     }
 
     /**
@@ -54,7 +54,6 @@ class Messenger
     private function setupWebhook()
     {
         if (isset($_REQUEST['hub_challenge']) && isset($_REQUEST['hub_verify_token']) && $this->getValidationToken() == $_REQUEST['hub_verify_token']) {
-            header("Content-Type:application/json");
             http_response_code(200);
             echo $_REQUEST['hub_challenge'];
             exit;
