@@ -101,8 +101,9 @@ class Messenger
         $request->greeting = $greeting;
         $response = self::executePost($url, $request, true);
         if ($response) {
-            $responseObject = json_decode($response);
-            return is_object($responseObject) && isset($responseObject->result) && strpos($responseObject->result, 'Success') !== false;
+            return $response;
+            /*$responseObject = json_decode($response);
+            return is_object($responseObject) && isset($responseObject->result) && strpos($responseObject->result, 'Success') !== false;*/
         }
         return false;
     }
