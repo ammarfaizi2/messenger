@@ -2,6 +2,9 @@
 require __DIR__ . '/config.php';
 require __DIR__ . '/vendor/autoload.php';
 use System\Messenger;
+use System\AI;
+define('data', __DIR__ . '/data');
+is_dir(data) or mkdir(data);
 header('Content-type:application/json');
 
 /*$input = json_decode('{
@@ -29,9 +32,10 @@ header('Content-type:application/json');
         }
     ]
 }',1);*/
-file_put_contents('test.txt', json_encode(json_decode(file_get_contents('php://input')),128));
+#file_put_contents('test.txt', json_encode(json_decode(file_get_contents('php://input')),128));
 $input = json_decode(file_get_contents("php://input"),1);
 if ($input) {
+    $ai = new AI();
     foreach ($input['entry'] as $val) {
         if (isset($config[$val['id']])) {
             /**
@@ -47,8 +51,13 @@ if ($input) {
                     $recipientId = isset($message['sender']['id']) ? $message['sender']['id'] : false;
                     print $recipientId;
                     if ($message['message']['text']) {
-                       print $bot->sendTextMessage($recipientId, $message['message']['text']);
-                    } elseif ($message->attachments) {
+                        $st = $ai->prepare($message['message']['text'], $recipientId);
+                        if($st->execute()){
+                            $r = $st->fetch_reply();
+                            $r = is_array($r) ? json_encode($r) : $r;
+                            $bot->sendTextMessage($recipientId, $r);
+                        }
+                    } elseif ($message) {
                         $bot->sendTextMessage($recipientId, "Attachment received");
                     }
                 }
