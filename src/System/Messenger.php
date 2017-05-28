@@ -9,10 +9,8 @@ class Messenger
 {
     const BASE_URL = 'https://graph.facebook.com/v2.6/';
 
+    private $_pgtoken;
     private $_validationToken;
-    private $_pageAccessToken;
-    private $_receivedMessages;
-    private $temp_message;
 
     /**
     * @param	string	$validationToken
@@ -21,33 +19,9 @@ class Messenger
     public function __construct($validationToken, $pageAccessToken)
     {
         is_dir(data.'/.tmp') or mkdir(data.'/.tmp');
+        $this->_pgtoken = "access_token=".$pageAccessToken;
         $this->_validationToken = $validationToken;
-        $this->_pageAccessToken = $pageAccessToken;
         $this->setupWebhook();
-    }
-
-    /**
-    * @return array
-    */
-    public function getReceivedMessages()
-    {
-        return $this->_receivedMessages;
-    }
-
-    /**
-    * @return array
-    */
-    public function getPageAccessToken()
-    {
-        return $this->_pageAccessToken;
-    }
-
-    /**
-    * @return array
-    */
-    public function getValidationToken()
-    {
-        return $this->_validationToken;
     }
 
     /**
@@ -55,7 +29,7 @@ class Messenger
     */
     private function setupWebhook()
     {
-        if (isset($_REQUEST['hub_challenge']) && isset($_REQUEST['hub_verify_token']) && $this->getValidationToken() == $_REQUEST['hub_verify_token']) {
+        if (isset($_REQUEST['hub_challenge']) && isset($_REQUEST['hub_verify_token']) && $this->_validationToken == $_REQUEST['hub_verify_token']) {
             http_response_code(200);
             echo $_REQUEST['hub_challenge'];
             exit;
@@ -65,7 +39,7 @@ class Messenger
     /**
     * @param	string	$recipientId
     * @param	string	$text
-    * @return	mixed
+    * @return   mixed
     */
     public function sendTextMessage($recipientId, $text)
     {   
@@ -82,19 +56,19 @@ class Messenger
         }
         $url = self::BASE_URL . "me/messages?access_token=%s";
         $url = sprintf($url, $this->getPageAccessToken());
-        $recipient = new \stdClass();
-        $recipient->id = $recipientId;
-        $message = new \stdClass();
-        $message->text = $text;
-        $parameters = ['recipient' => $recipient, 'message' => $message];
-        $response = self::executePost($url, $parameters, true);
-        if ($response) {
-            return $response;
-            /*$responseObject = json_decode($response);
-            return is_object($responseObject) && isset($responseObject->recipient_id) && isset($responseObject->message_id);*/
-        }
-        return false;
+        $param = '{"recipient": {"id": "'.$recipientId.'"},"message": {"text": '.json_encode($text).'}}';
+        $response = self::executePost($url, $param, true);
+        return $response ? $response : false;
     }
+
+
+    public function sendImage($recipientId, $imageurl)
+    {
+        $param = '{"recipient": {"id": "'.$recipientId.'"},"message": {"attachment": {"type": "image","payload": {"url": '.json_encode($imageurl).',"is_reusable": true}}}}';
+        $response = self::executePost($url, $param, true);
+        return $response ? $response : false;
+    }
+
 
     /**
     * @param	string	$pageId
@@ -189,10 +163,9 @@ class Messenger
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         if ($json) {
-            $data = json_encode($parameters);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($data)));
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $parameters);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($parameters)));
         } else {
             curl_setopt($ch, CURLOPT_POST, count($parameters));
             curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
