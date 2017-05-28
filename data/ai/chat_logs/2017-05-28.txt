@@ -424,5 +424,11 @@
         "actor": "\"",
         "msg": "hai",
         "reply": "Hay juga \". Apa kabar?"
+    },
+    {
+        "time": "2017-05-28 11:05:42",
+        "actor": "Ammar Faizi",
+        "msg": "hai",
+        "reply": "Hay juga Ammar. Apa kabar?"
     }
 ]
