@@ -82,8 +82,8 @@ class Messenger
 
     public function get_sender_name($id)
     {
-        $a = self::execute('https://graph.facebook.com/'.$id.'/?'.$this->_pgtoken.'fields=first_name,middle_name,last_name');
-        print_r($a);
+        $a = json_encode(self::execute('https://graph.facebook.com/'.$id.$this->_pgtoken.'&fields=first_name,last_name'), 1);
+        return $a['first_name'].(isset($a['last_name']) ? ' '.$a['last_name'] : '');
     }
 
     /**

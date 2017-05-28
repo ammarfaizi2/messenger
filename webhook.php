@@ -7,7 +7,7 @@ define('data', __DIR__ . '/data');
 is_dir(data) or mkdir(data);
 header('Content-type:application/json');
 
-/*$input = json_decode('{
+$input = json_decode('{
     "object": "page",
     "entry": [
         {
@@ -31,9 +31,9 @@ header('Content-type:application/json');
             ]
         }
     ]
-}',1);*/
-file_put_contents('test.txt', json_encode(json_decode(file_get_contents('php://input')),128));
-$input = json_decode(file_get_contents("php://input"),1);
+}',1);
+#file_put_contents('test.txt', json_encode(json_decode(file_get_contents('php://input')),128));
+#$input = json_decode(file_get_contents("php://input"),1);
 if ($input) {
     $ai = new AI();
     foreach ($input['entry'] as $val) {
@@ -42,8 +42,7 @@ if ($input) {
             *   Init Class
             */
             $bot = new Messenger($config[$val['id']]['validation'], $config[$val['id']]['token']);
-            $bot->get_sender_name('1255485451166918');
-            die;
+            
             /**
             *   Lha kene kie foreach message e
             */
@@ -51,7 +50,7 @@ if ($input) {
                 foreach ($val['messaging'] as $message) {
                     $recipientId = isset($message['sender']['id']) ? $message['sender']['id'] : false;
                     if ($message['message']['text']) {
-                        $st = $ai->prepare($message['message']['text'], $recipientId);
+                        $st = $ai->prepare($message['message']['text'], $bot->get_sender_name($recipientId));
                         if($st->execute()){
                             $r = $st->fetch_reply();
                             if (is_array($r)) {
