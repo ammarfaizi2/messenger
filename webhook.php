@@ -42,7 +42,8 @@ if ($input) {
             *   Init Class
             */
             $bot = new Messenger($config[$val['id']]['validation'], $config[$val['id']]['token']);
-
+            $bot->get_sender_name('1255485451166918');
+            die;
             /**
             *   Lha kene kie foreach message e
             */

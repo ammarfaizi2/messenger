@@ -56,7 +56,7 @@ class Messenger
             return $act;
         }
         $param = '{"recipient": {"id": "'.$recipientId.'"},"message": {"text": '.json_encode($text).'}}';
-        $response = self::executePost(self::BASE_URL."me/messages".$this->_pgtoken, $param, true);
+        $response = self::execute(self::BASE_URL."me/messages".$this->_pgtoken, $param, true);
         return $response ? $response : false;
     }
 
@@ -70,10 +70,10 @@ class Messenger
         $hash = sha1($imageurl);
         if ($cid = $this->check_cache(data.'/.msg_cache/img_cache.txt', $hash)) {
             $param = '{"recipient": {"id": "'.$recipientId.'"},"message": {"attachment": {"type": "image","payload": {"attachment_id": "'.$cid.'"}}}}';
-            $response = self::executePost(self::BASE_URL."me/messages".$this->_pgtoken, $param, true);
+            $response = self::execute(self::BASE_URL."me/messages".$this->_pgtoken, $param, true);
         } else {
             $param = '{"recipient": {"id": "'.$recipientId.'"},"message": {"attachment": {"type": "image","payload": {"url": '.json_encode($imageurl).',"is_reusable": true}}}}';
-            $response = self::executePost(self::BASE_URL."me/messages".$this->_pgtoken, $param, true);
+            $response = self::execute(self::BASE_URL."me/messages".$this->_pgtoken, $param, true);
             $data = json_decode($response, 1);
             $this->create_cache(data.'/.msg_cache/img_cache.txt', $hash, $data['attachment_id']);
         }
@@ -82,7 +82,8 @@ class Messenger
 
     public function get_sender_name($id)
     {
-        return 
+        $a = self::execute('https://graph.facebook.com/'.$id.'/?'.$this->_pgtoken.'fields=first_name,middle_name,last_name');
+        print_r($a);
     }
 
     /**
@@ -127,7 +128,7 @@ class Messenger
         $greeting = new \stdClass();
         $greeting->text = $text;
         $request->greeting = $greeting;
-        $response = self::executePost($url, $request, true);
+        $response = self::execute($url, $request, true);
         if ($response) {
             return $response;
             /*$responseObject = json_decode($response);
@@ -178,7 +179,7 @@ class Messenger
     {
         $url = self::BASE_URL . "me/subscribed_apps";
         $parameters = ['access_token' => $this->getPageAccessToken()];
-        $response = self::executePost($url, $parameters);
+        $response = self::execute($url, $parameters);
         if ($response) {
             $responseObject = json_decode($response);
             return is_object($responseObject) && isset($responseObject->success) && $responseObject->success == "true";
@@ -201,7 +202,7 @@ class Messenger
     * @param	bool	$json
     * @return	string
     */
-    private static function executePost($url, $parameters = null, $json = false)
+    private static function execute($url, $parameters = null, $json = false)
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
