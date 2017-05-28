@@ -41,7 +41,7 @@ class Messenger
     * @param	string	$text
     * @return   mixed
     */
-    public function sendTextMessage($recipientId, $text)
+    public function send_message($recipientId, $text)
     {   
         $long_text = strlen($text);
         if ($long_text>640) {
@@ -50,7 +50,7 @@ class Messenger
             $act = array();
             $handle = fopen($tmp_file, 'r');
             while ($r = fread($handle, 640)) {
-                $act[] = $this->sendTextMessage($recipientId, $r);
+                $act[] = $this->send_message($recipientId, $r);
             }
             return $act;
         }
@@ -64,7 +64,7 @@ class Messenger
     * @param    string  $imageurl
     * @return   mixed
     */
-    public function sendImage($recipientId, $imageurl)
+    public function send_image($recipientId, $imageurl)
     {
         $param = '{"recipient": {"id": "'.$recipientId.'"},"message": {"attachment": {"type": "image","payload": {"url": '.json_encode($imageurl).',"is_reusable": true}}}}';
         $response = self::executePost(self::BASE_URL."me/messages".$this->_pgtoken, $param, true);

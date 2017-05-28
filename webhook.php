@@ -53,8 +53,10 @@ if ($input) {
                         $st = $ai->prepare($message['message']['text'], $recipientId);
                         if($st->execute()){
                             $r = $st->fetch_reply();
-                            $r = is_array($r) ? json_encode($r) : $r;
-                            var_dump($bot->sendTextMessage($recipientId, $r));
+                            if (is_array($r)) {
+                                $bot->send_message($recipientId, $r[1]);
+                                $bot->send_image($recipientId,$r[0]);
+                            }
                         }
                     } elseif ($message) {
                         $bot->sendTextMessage($recipientId, "Attachment received");
