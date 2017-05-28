@@ -12,6 +12,7 @@ class Messenger
     private $_validationToken;
     private $_pageAccessToken;
     private $_receivedMessages;
+    private $temp_message;
 
     /**
     * @param	string	$validationToken
@@ -19,6 +20,7 @@ class Messenger
     */
     public function __construct($validationToken, $pageAccessToken)
     {
+        is_dir(data.'/.tmp') or mkdir(data.'/.tmp');
         $this->_validationToken = $validationToken;
         $this->_pageAccessToken = $pageAccessToken;
         $this->setupWebhook();
@@ -66,7 +68,18 @@ class Messenger
     * @return	mixed
     */
     public function sendTextMessage($recipientId, $text)
-    {
+    {   
+        $long_text = strlen($text);
+        if ($long_text>640) {
+            $tmp_file = data.'/.tmp/msg_'.sha1($text).'.tmp';
+            file_exists($tmp_file) or file_put_contents($tmp_file, $text);
+            $act = array();
+            $handle = fopen($tmp_file, 'r');
+            while ($r = fread($handle, 640)) {
+                $act[] = $this->sendTextMessage($recipientId, $r);
+            }
+            return $act;
+        }
         $url = self::BASE_URL . "me/messages?access_token=%s";
         $url = sprintf($url, $this->getPageAccessToken());
         $recipient = new \stdClass();

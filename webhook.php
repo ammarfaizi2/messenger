@@ -7,7 +7,7 @@ define('data', __DIR__ . '/data');
 is_dir(data) or mkdir(data);
 header('Content-type:application/json');
 
-/*$input = json_decode('{
+$input = json_decode('{
     "object": "page",
     "entry": [
         {
@@ -25,15 +25,15 @@ header('Content-type:application/json');
                     "message": {
                         "mid": "mid.$cAAMQBwdWfhZiengCNFcSTK1P8txA",
                         "seq": 3118457,
-                        "text": "Vafnfamfa"
+                        "text": "i_anime 31765"
                     }
                 }
             ]
         }
     ]
-}',1);*/
+}',1);
 #file_put_contents('test.txt', json_encode(json_decode(file_get_contents('php://input')),128));
-$input = json_decode(file_get_contents("php://input"),1);
+#$input = json_decode(file_get_contents("php://input"),1);
 if ($input) {
     $ai = new AI();
     foreach ($input['entry'] as $val) {
@@ -49,13 +49,12 @@ if ($input) {
             if (isset($val['messaging'])) {
                 foreach ($val['messaging'] as $message) {
                     $recipientId = isset($message['sender']['id']) ? $message['sender']['id'] : false;
-                    print $recipientId;
                     if ($message['message']['text']) {
                         $st = $ai->prepare($message['message']['text'], $recipientId);
                         if($st->execute()){
                             $r = $st->fetch_reply();
                             $r = is_array($r) ? json_encode($r) : $r;
-                            $bot->sendTextMessage($recipientId, $r);
+                            var_dump($bot->sendTextMessage($recipientId, $r));
                         }
                     } elseif ($message) {
                         $bot->sendTextMessage($recipientId, "Attachment received");
