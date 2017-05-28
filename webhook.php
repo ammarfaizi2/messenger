@@ -25,7 +25,7 @@ $input = json_decode('{
                     "message": {
                         "mid": "mid.$cAAMQBwdWfhZiengCNFcSTK1P8txA",
                         "seq": 3118457,
-                        "text": "i_anime 31765"
+                        "text": "hai"
                     }
                 }
             ]
