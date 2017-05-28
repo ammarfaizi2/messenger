@@ -67,10 +67,16 @@ class Messenger
     */
     public function send_image($recipientId, $imageurl)
     {
-        data.'/.msg_cache'
-
-        $param = '{"recipient": {"id": "'.$recipientId.'"},"message": {"attachment": {"type": "image","payload": {"url": '.json_encode($imageurl).',"is_reusable": true}}}}';
-        $response = self::executePost(self::BASE_URL."me/messages".$this->_pgtoken, $param, true);
+        $hash = sha1($imageurl);
+        if ($cid = $this->check_cache(data.'/.msg_cache/img_cache.txt', $hash)) {
+            $param = '{"recipient": {"id": "'.$recipientId.'"},"message": {"attachment": {"type": "image","payload": {"attachment_id": "'.$cid.'"}}}}';
+            $response = self::executePost(self::BASE_URL."me/messages".$this->_pgtoken, $param, true);
+        } else {
+            $param = '{"recipient": {"id": "'.$recipientId.'"},"message": {"attachment": {"type": "image","payload": {"url": '.json_encode($imageurl).',"is_reusable": true}}}}';
+            $response = self::executePost(self::BASE_URL."me/messages".$this->_pgtoken, $param, true);
+            $data = json_decode($response, 1);
+            $this->create_cache(data.'/.msg_cache/img_cache.txt', $hash, $data['attachment_id']);
+        }
         return $response ? $response : false;
     }
 
@@ -81,10 +87,27 @@ class Messenger
     */
     private function check_cache($file, $hash)
     {
+        if (file_exists($file) ) {
+            return false;
+        }
         $src = json_decode(file_get_contents($file), 1);
         $src = is_array($src) ? $src : array();
-        return in_array($hash, $src) ? $src[$hash] : false;
+        return isset($src[$hash]) ? $src[$hash] : false;
     }
+
+    /**
+    * @param    string  $file
+    * @param    string  $hash
+    * @param    string  $id
+    * @return   mixed
+    */
+    private function create_cache($file, $hash, $id)
+    {
+        $src = file_exists($file) ? json_decode(file_get_contents($file), 1) : array();
+        $src[$hash] = $id;
+        return file_put_contents($file, json_encode($src, 128));
+    }
+
 
     /**
     * @param	string	$pageId
