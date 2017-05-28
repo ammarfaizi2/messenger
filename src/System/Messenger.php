@@ -19,6 +19,7 @@ class Messenger
     public function __construct($validationToken, $pageAccessToken)
     {
         is_dir(data.'/.tmp') or mkdir(data.'/.tmp');
+        is_dir(data.'/.msg_cache') or mkdir(data.'/.msg_cache');
         $this->_pgtoken = "?access_token=".$pageAccessToken;
         $this->_validationToken = $validationToken;
         $this->setupWebhook();
@@ -66,11 +67,24 @@ class Messenger
     */
     public function send_image($recipientId, $imageurl)
     {
+        data.'/.msg_cache'
+
         $param = '{"recipient": {"id": "'.$recipientId.'"},"message": {"attachment": {"type": "image","payload": {"url": '.json_encode($imageurl).',"is_reusable": true}}}}';
         $response = self::executePost(self::BASE_URL."me/messages".$this->_pgtoken, $param, true);
         return $response ? $response : false;
     }
 
+    /**
+    * @param    string  $file
+    * @param    string  $hash
+    * @return   mixed
+    */
+    private function check_cache($file, $hash)
+    {
+        $src = json_decode(file_get_contents($file), 1);
+        $src = is_array($src) ? $src : array();
+        return in_array($hash, $src) ? $src[$hash] : false;
+    }
 
     /**
     * @param	string	$pageId
