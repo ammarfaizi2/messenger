@@ -80,6 +80,11 @@ class Messenger
         return $response ? $response : false;
     }
 
+    public function get_sender_name($id)
+    {
+        return 
+    }
+
     /**
     * @param    string  $file
     * @param    string  $hash
@@ -116,8 +121,7 @@ class Messenger
     */
     public function setWelcomeMessage($pageId, $text)
     {
-        $url = self::BASE_URL . "%s/thread_settings?access_token=%s";
-        $url = sprintf($url, $pageId, $this->getPageAccessToken());
+        $url = self::BASE_URL . "%s/thread_settings".$this->_pgtoken;
         $request = new \stdClass();
         $request->setting_type = "greeting";
         $greeting = new \stdClass();
@@ -197,17 +201,19 @@ class Messenger
     * @param	bool	$json
     * @return	string
     */
-    private static function executePost($url, $parameters, $json = false)
+    private static function executePost($url, $parameters = null, $json = false)
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        if ($json) {
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $parameters);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($parameters)));
-        } else {
-            curl_setopt($ch, CURLOPT_POST, count($parameters));
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
+        if ($parameters) {
+            if ($json) {
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $parameters);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($parameters)));
+            } else {
+                curl_setopt($ch, CURLOPT_POST, count($parameters));
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($parameters));
+            }
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);

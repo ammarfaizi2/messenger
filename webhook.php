@@ -7,7 +7,7 @@ define('data', __DIR__ . '/data');
 is_dir(data) or mkdir(data);
 header('Content-type:application/json');
 
-$input = json_decode('{
+/*$input = json_decode('{
     "object": "page",
     "entry": [
         {
@@ -31,9 +31,9 @@ $input = json_decode('{
             ]
         }
     ]
-}',1);
-#file_put_contents('test.txt', json_encode(json_decode(file_get_contents('php://input')),128));
-#$input = json_decode(file_get_contents("php://input"),1);
+}',1);*/
+file_put_contents('test.txt', json_encode(json_decode(file_get_contents('php://input')),128));
+$input = json_decode(file_get_contents("php://input"),1);
 if ($input) {
     $ai = new AI();
     foreach ($input['entry'] as $val) {
@@ -56,6 +56,8 @@ if ($input) {
                             if (is_array($r)) {
                                 $bot->send_message($recipientId, $r[1]);
                                 $bot->send_image($recipientId,$r[0]);
+                            } else {
+                                $bot->send_message($recipientId, $r);
                             }
                         }
                     } elseif ($message) {
