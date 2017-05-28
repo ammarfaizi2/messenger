@@ -19,7 +19,7 @@ class Messenger
     public function __construct($validationToken, $pageAccessToken)
     {
         is_dir(data.'/.tmp') or mkdir(data.'/.tmp');
-        $this->_pgtoken = "access_token=".$pageAccessToken;
+        $this->_pgtoken = "?access_token=".$pageAccessToken;
         $this->_validationToken = $validationToken;
         $this->setupWebhook();
     }
@@ -54,18 +54,20 @@ class Messenger
             }
             return $act;
         }
-        $url = self::BASE_URL . "me/messages?access_token=%s";
-        $url = sprintf($url, $this->getPageAccessToken());
         $param = '{"recipient": {"id": "'.$recipientId.'"},"message": {"text": '.json_encode($text).'}}';
-        $response = self::executePost($url, $param, true);
+        $response = self::executePost(self::BASE_URL."me/messages".$this->_pgtoken, $param, true);
         return $response ? $response : false;
     }
 
-
+    /**
+    * @param    string  $recipientId
+    * @param    string  $imageurl
+    * @return   mixed
+    */
     public function sendImage($recipientId, $imageurl)
     {
         $param = '{"recipient": {"id": "'.$recipientId.'"},"message": {"attachment": {"type": "image","payload": {"url": '.json_encode($imageurl).',"is_reusable": true}}}}';
-        $response = self::executePost($url, $param, true);
+        $response = self::executePost(self::BASE_URL."me/messages".$this->_pgtoken, $param, true);
         return $response ? $response : false;
     }
 
