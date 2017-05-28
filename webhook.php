@@ -59,7 +59,7 @@ if ($input) {
                             }
                         }
                     } elseif ($message) {
-                        $bot->sendTextMessage($recipientId, "Attachment received");
+                        $bot->send_message($recipientId, "Attachment received");
                     }
                 }
             }
