@@ -1,18 +1,14 @@
 {
-    "name": "root/ni",
+    "name": "ammarfaizi2/messenger",
     "authors": [
         {
             "name": "Ammar Faizi",
             "email": "ammarfaizi2@gmail.com"
         }
     ],
-    "require": {
-    	"ammarfaizi2/ai": "dev-master",
-    	"ammarfaizi2/ratools": "dev-master"
-    },
     "autoload":{
-    	"psr-0":{
-    		"System": "src/"
+    	"psr-4":{
+    		"Messenger\\": "Messenger/"
     	}
     }
 }
