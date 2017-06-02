@@ -2,7 +2,7 @@
 define("VALIDATION_TOKEN", "858869123");
 
 
-$config['926837650793495'] = array(
-        'token'=>'EAAPFA1dRfC4BACBL5nQgiZAwcB08Y07pOS2tPdrL7yAt6vMhEpNda7yhk7AuuZCecoROYUWNQcjIzGjYYt24TpfTlclooCV5uTwDCmALfb9GSv2ZBWn55rYZClGbZAgZANVcj6drZAvE1AjzliwTxGsaXOpAl0qQXaeZA4eNRme83QZDZD',
+$config['800281320073271'] = array(
+        'token'=>'EAAPFA1dRfC4BANCpZADlenPQSSsQUscG1e8ahraWR8RYZAzMByZAqExNFqknhvjP8olOJG3lBkvaNwFxQgrTQYztSpFCHNhOeewfhSolvf6CfwqivVAPYFHnZBkdGArgZCj0heDokMyETrzQk01IZBfPNQzZA5zY4Kk9EZAQsK1PJgZDZD',
         'welcome_msg'=>"Selamat datang di Bot Es Teh, bot yang dapat membantu aktivitas harian serta chatting ketika kesepian."
     );

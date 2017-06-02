@@ -1,9 +1,11 @@
 <?php
-namespace System;
+namespace Messenger;
+
+defined('data') or die('Data not defined !');
 
 /**
-* @author Ammar Faizi <ammarfaizi2@gmail.com>
-*/
+ * @author Ammar Faizi <ammarfaizi2@gmail.com>
+ */
 
 class Messenger
 {
@@ -14,20 +16,19 @@ class Messenger
 
     public function __construct()
     {
-
+        is_dir(data) or mkdir(data);
+        is_dir(data.'/.tmp') or mkdir(data.'/.tmp');
+        is_dir(data.'/.msg_cache') or mkdir(data.'/.msg_cache');
+        is_dir(data.'/msg_data') or mkdir(data.'/msg_data');
     }
 
     /**
     * @param	string	$validationToken
     * @param	string	$pageAccessToken
     */
-    public function set($validationToken, $pageAccessToken)
+    public function set_token($pageAccessToken)
     {
-        is_dir(data.'/.tmp') or mkdir(data.'/.tmp');
-        is_dir(data.'/.msg_cache') or mkdir(data.'/.msg_cache');
         $this->_pgtoken = "?access_token=".$pageAccessToken;
-        $this->_validationToken = $validationToken;
-        $this->setupWebhook();
     }
 
     public static function get_input()
@@ -132,21 +133,27 @@ class Messenger
     * @param	string	$text
     * @return	mixed
     */
-    public function setWelcomeMessage($pageId, $text)
+    public function set_welcome_msg($pageId, $text)
     {
-        $url = self::BASE_URL . "%s/thread_settings".$this->_pgtoken;
-        $request = new \stdClass();
-        $request->setting_type = "greeting";
-        $greeting = new \stdClass();
-        $greeting->text = $text;
-        $request->greeting = $greeting;
-        $response = self::execute($url, $request, true);
-        if ($response) {
-            return $response;
-            /*$responseObject = json_decode($response);
-            return is_object($responseObject) && isset($responseObject->result) && strpos($responseObject->result, 'Success') !== false;*/
+        $hash = md5($text);
+        if (!file_exists(data.'/msg_data/welcome_msg_'.$pageId."_".$hash.".txt")) {
+            $url = self::BASE_URL . "%s/thread_settings".$this->_pgtoken;
+            $request = new \stdClass();
+            $request->setting_type = "greeting";
+            $greeting = new \stdClass();
+            $greeting->text = $text;
+            $request->greeting = $greeting;
+            $response = self::execute($url, $request, true);
+            if ($response) {
+                file_put_contents(data.'/msg_data/welcome_msg_'.$pageId."_".$hash.".txt", $text);
+                return $response;
+                /*$responseObject = json_decode($response);
+                return is_object($responseObject) && isset($responseObject->result) && strpos($responseObject->result, 'Success') !== false;*/
+            }
+            return false;
+        } else {
+            return false;
         }
-        return false;
     }
 
     /**
