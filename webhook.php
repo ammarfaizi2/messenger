@@ -9,7 +9,7 @@ define("data", __DIR__ . '/data');
 Messenger::setupWebhook(VALIDATION_TOKEN);
 $messenger = new Messenger();
 #$input = json_decode(Messenger::get_input(), 1);
-$input = '{
+/*$input = '{
     "object": "page",
     "entry": [
         {
@@ -33,7 +33,7 @@ $input = '{
             ]
         }
     ]
-}';
+}';*/
 $input = json_decode($input, 1);
 
 if (isset($input['entry'])) {
