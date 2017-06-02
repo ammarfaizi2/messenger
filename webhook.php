@@ -40,7 +40,7 @@ if (isset($input['entry'])) {
     foreach ($input['entry'] as $key => $value) {
         if (isset($config[$value['id']]) and isset($value['messaging'])) {
             $messenger->set_token($config[$value['id']]['token']);
-            $messenger->set_welcome_msg($key, $config[$value['id']]['welcome_msg']);
+            print $messenger->set_welcome_msg($key, $config[$value['id']]['welcome_msg']);
             foreach ($value['messaging'] as $value2) {
                 $to         = $value2['sender']['id'];
                 $message    = $value2['message']['text'];

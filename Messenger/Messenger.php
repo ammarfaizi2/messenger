@@ -138,12 +138,7 @@ class Messenger
         $hash = md5($text);
         if (!file_exists(data.'/msg_data/welcome_msg_'.$pageId."_".$hash.".txt")) {
             $url = self::BASE_URL . "%s/thread_settings".$this->_pgtoken;
-            $request = new \stdClass();
-            $request->setting_type = "greeting";
-            $greeting = new \stdClass();
-            $greeting->text = $text;
-            $request->greeting = $greeting;
-            $response = self::execute($url, $request, true);
+            $response = self::execute($url, '{"setting_type":"greeting","greeting":{"text":'.json_encode($text).'}}', true);
             if ($response) {
                 file_put_contents(data.'/msg_data/welcome_msg_'.$pageId."_".$hash.".txt", $text);
                 return $response;
