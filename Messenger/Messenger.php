@@ -12,11 +12,16 @@ class Messenger
     private $_pgtoken;
     private $_validationToken;
 
+    public function __construct()
+    {
+
+    }
+
     /**
     * @param	string	$validationToken
     * @param	string	$pageAccessToken
     */
-    public function __construct($validationToken, $pageAccessToken)
+    public function set($validationToken, $pageAccessToken)
     {
         is_dir(data.'/.tmp') or mkdir(data.'/.tmp');
         is_dir(data.'/.msg_cache') or mkdir(data.'/.msg_cache');
@@ -25,12 +30,19 @@ class Messenger
         $this->setupWebhook();
     }
 
+    public static function get_input()
+    {
+        return file_get_contents("php://input");
+    }
+
     /**
     * @todo Setup Webhook
+    * @param    string  $validationToken
     */
-    private function setupWebhook()
+    public static function setupWebhook($validationToken)
     {
-        if (isset($_REQUEST['hub_challenge']) && isset($_REQUEST['hub_verify_token']) && $this->_validationToken == $_REQUEST['hub_verify_token']) {
+        header("Content-Type: application/json");
+        if (isset($_REQUEST['hub_challenge']) && isset($_REQUEST['hub_verify_token']) && $validationToken == $_REQUEST['hub_verify_token']) {
             http_response_code(200);
             echo $_REQUEST['hub_challenge'];
             exit;
